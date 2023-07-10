@@ -1,1 +1,1 @@
-web: gunicorn pdf-audio-converter.wsgi --log-file -
+web: gunicorn pdf_audio_converter.wsgi --log-file -
