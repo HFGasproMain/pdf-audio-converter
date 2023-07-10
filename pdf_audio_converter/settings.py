@@ -26,6 +26,9 @@ SECRET_KEY = "django-insecure-jb0p3w4l!5p+@znvu31!v+z+j--#lz*^uwp+0gp5#w-3spv*0y
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+CORS_ALLOWED_ORIGINS = [
+    'https://pdf-audio-converter.up.railway.app',
+
 ALLOWED_HOSTS = ['*', 'pdf-audio-converter.up.railway.app']
 
 
@@ -91,7 +94,7 @@ DATABASES = {
 }
 
 
-CSRF_TRUSTED_ORIGINS = ['pdf-audio-converter.up.railway.app']
+CSRF_TRUSTED_ORIGINS = ['https://pdf-audio-converter.up.railway.app']
 
 
 # Password validation
