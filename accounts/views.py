@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ValidationError
 from .forms import UserProfileForm, UploadFileForm, LanguageSelectionForm
 from .models import Profile, File
 from .services import convert_pdf_to_audio
@@ -120,31 +121,24 @@ def convert_file_view(request, file_id):
         form = LanguageSelectionForm(request.POST)
         if form.is_valid():
             language = form.cleaned_data['language']
-            audio_file_path = convert_pdf_to_audio(file.pdf_file.path, language)
-            print(f'audio file path => {audio_file_path}')
             
-            # Check if the audio file has been converted
-            if file.audio_file:
+            try:
+                audio_file_path = convert_pdf_to_audio(file.pdf_file.path, language)
+                print(f'audio file path => {audio_file_path}')
+
+                # Update the audio_file field with the generated audio file
                 file.audio_file.name = audio_file_path
-                #file.audio_file.name = f'audio/{file.pdf_file.path}.mp3'
-                print(f'audio file path => {file.audio_file.name}')
-                file.save()
-            else:
-                file.audio_file.name = audio_file_path
-                print(f'audio file path else ;=> {file.audio_file.name}')
+
+                # Save the file
                 file.save()
 
-            # Update the audio_file field with the generated audio file
-            #file.audio_file.name = audio_file_path
-            #print(f'audio file path => {audio_file_path}')
-            #file.audio_file.url = '/audio/{{ file.audio_file.name }}.mp3'
-            #file.audio_file.name = f'audio/{file.pdf_file.path}.mp3'
-            #print(f'audio file path short :=> {audio_file_path}')
-            file.save()
-            return redirect('save', file_id=file.id)
+                return redirect('save', file_id=file.id)
+            except ValidationError as e:
+                form.add_error(None, str(e))
+                print(f'error => {e}')
     else:
         form = LanguageSelectionForm()
-    
+
     return render(request, 'convert_file.html', {'form': form})
 
 
