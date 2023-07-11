@@ -87,33 +87,6 @@ def upload_file_view(request):
 
 
 @login_required(login_url='login')
-def convert_file_views(request, file_id):
-    file = get_object_or_404(File, id=file_id, user=request.user)
-    print(f'File => {file}')
-    if request.method == 'POST':
-        form = LanguageSelectionForm(request.POST)
-        if form.is_valid():
-            language = form.cleaned_data['language']
-            print(f'chosen lang: {language}')
-            audio_file_path = convert_pdf_to_audio(file.pdf_file.path, language)
-            file.audio_file.save(audio_file_path, file.pdf_file.name)
-            file.save()
-
-            #audio_file_path = convert_pdf_to_audio(file.pdf_file.path, language)
-            #file.audio_file.save(audio_file_path, file.pdf_file.name, content_type='audio/mpeg', file_name='audio_file.mp3')
-            #file.audio_file.name = audio_file_path
-            print(f'audio file => {audio_file_path}')
-            #audio_file_path = convert_pdf_to_audio(file.pdf_file.path, language)
-            #file.audio_file = audio_file_path
-
-            file.save()
-            return redirect('save', file_id=file.id)
-    else:
-        form = LanguageSelectionForm()
-    return render(request, 'convert_file.html', {'form': form})
-
-
-@login_required(login_url='login')
 def convert_file_view(request, file_id):
     file = get_object_or_404(File, id=file_id, user=request.user)
 
